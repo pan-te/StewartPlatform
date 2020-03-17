@@ -7,6 +7,7 @@ import math
 
 sqrt3 = math.sqrt(3)
 
+
 class Matrix3:
 	def __init__(self,coordinates):
 		self.row1 = coordinates[0]
@@ -26,7 +27,7 @@ class Vector:
 		self.z = coordinates[2]
 		
 	def printAll(self):
-		print(f'{self.x:4.2f}, {self.y:4.2f}, {self.z:4.2f}')
+		print(f'[{self.x:4.2f};\n {self.y:4.2f};\n {self.z:4.2f}]')
 
 	def add(vector1, vector2):
 		return Vector((vector1.x + vector2.x, vector1.y + vector2.y, vector1.z + vector2.z))
@@ -47,6 +48,9 @@ class Plane:
 		self.position = Vector(pos)
 		self.rotation = Vector(rot)
 		
+	def printAll(self):
+		self.position.printAll()
+		self.rotation.printAll()		
 		
 class Platform:
 	def __init__(self, dim_a, dim_b, thickness):
@@ -80,11 +84,6 @@ class Platform:
 			self.jackVectorRotated[i] = multiplyMatrix3ByVector(transformationMatrix, self.jackVector[i])
 			self.jackVectorTransformed[i] = Vector.add(self.jackVectorRotated[i], plane.position)
 			
-	def reverseTransform(self, lengthValue):
-		while resultMatch == false:
-			pass
-		pass
-			
 			
 class Base:
 	def __init__(self, dim_a, dim_b):
@@ -102,9 +101,65 @@ def calculateLength(origin, destination):
 	lengthValue = [None] * 6
 	for i in range(6):
 		length[i] = Vector.sub(destination.jackVectorTransformed[i],origin.jackOrigin[i])
-		lengthValue[i] = (math.sqrt(length[i].x * length[i].x + length[i].y * length[i].y + length[i].z * length[i].z))
+		lengthValue[i] = (math.sqrt(length[i].x ** 2 + length[i].y ** 2 + length[i].z ** 2))
 	return lengthValue
 	
+def reverseTransform(origin, destination, maxLength, lengthValue):
+	maxXYZ = maxLength
+	firstRange = maxLength // 5
+	radious = math.pi/2
+	radiousFirstRange = radious / 5
+	minError = 99999
+	for i in range(0, maxXYZ, firstRange):
+		for j in range(0, maxXYZ, firstRange):
+			for k in range(-maxXYZ, 0, firstRange):
+				l = -radious
+				while l < radious:
+					m = -radious
+					while m < radious:
+						n = -radious
+						while n < radious:
+							tempError = 0
+							destination.transform(Plane((i,j,k),(l,m,n)))
+							calculatedValue = calculateLength(origin, destination)
+							for z in range(6):
+								tempError += (calculatedValue[z] - lengthValue[z]) ** 2
+							if tempError < minError:
+								minError = tempError
+								bestValues = [[i,j,k],[l,m,n]]
+							n += radiousFirstRange
+						m += radiousFirstRange
+					l += radiousFirstRange
+	secondRange = maxLength // 25
+	radiousSecondRange = radious / 25
+	minError = 99999
+	minL = bestValues[1][0] - radiousFirstRange
+	minM = bestValues[1][1] - radiousFirstRange
+	minN = bestValues[1][2] - radiousFirstRange
+	maxL = bestValues[1][0] + radiousFirstRange
+	maxM = bestValues[1][1] + radiousFirstRange
+	maxN = bestValues[1][2] + radiousFirstRange
+	for i in range(bestValues[0][0] - firstRange, bestValues[0][0] + firstRange, secondRange):
+		for j in range(bestValues[0][1] - firstRange, bestValues[0][1] + firstRange, secondRange):
+			for k in range(bestValues[0][2] - firstRange, bestValues[0][2] + firstRange, secondRange):
+				l = minL
+				while l < maxL:
+					m = minM
+					while m < maxM:
+						n = minN
+						while n < maxN:
+							tempError = 0
+							destination.transform(Plane((i,j,k),(l,m,n)))
+							calculatedValue = calculateLength(origin, destination)
+							for z in range(6):
+								tempError += (calculatedValue[z] - lengthValue[z]) ** 2
+							if tempError < minError:
+								minError = tempError
+								bestValues = [[i,j,k],[l,m,n]]
+							n += radiousSecondRange
+						m += radiousSecondRange
+					l += radiousSecondRange
+	return Plane(bestValues[0], bestValues[1])
 	
 def printValues(source):
 	for i in source:
