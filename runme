@@ -1,2 +1,2 @@
 #!/bin/sh
-python stewart.py
+python3.8 stewart.py

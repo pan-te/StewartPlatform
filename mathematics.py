@@ -1,5 +1,5 @@
 # coding=utf-8
-#Zestaw narzędzi do transformacji przejściowej
+#Zestaw narzędzi do transformacji
 #(C)by Daniel Sadlik
 #2020
 
@@ -26,9 +26,7 @@ class Vector:
 		self.z = coordinates[2]
 		
 	def printAll(self):
-		print(self.x)
-		print(self.y)
-		print(self.z)
+		print(f'{self.x:4.2f}, {self.y:4.2f}, {self.z:4.2f}')
 
 	def add(vector1, vector2):
 		return Vector((vector1.x + vector2.x, vector1.y + vector2.y, vector1.z + vector2.z))
@@ -48,6 +46,7 @@ class Plane:
 	def __init__(self, pos, rot):
 		self.position = Vector(pos)
 		self.rotation = Vector(rot)
+		
 		
 class Platform:
 	def __init__(self, dim_a, dim_b, thickness):
@@ -81,6 +80,12 @@ class Platform:
 			self.jackVectorRotated[i] = multiplyMatrix3ByVector(transformationMatrix, self.jackVector[i])
 			self.jackVectorTransformed[i] = Vector.add(self.jackVectorRotated[i], plane.position)
 			
+	def reverseTransform(self, lengthValue):
+		while resultMatch == false:
+			pass
+		pass
+			
+			
 class Base:
 	def __init__(self, dim_a, dim_b):
 		self.jackOrigin = [None] * 6
@@ -90,6 +95,7 @@ class Base:
 		self.jackOrigin[3] = Vector((dim_b / 2, (-dim_a / 3 + dim_b / 2) * sqrt3, 0))
 		self.jackOrigin[4] = Vector((-dim_b / 2, (-dim_a / 3 + dim_b / 2) * sqrt3, 0))
 		self.jackOrigin[5] = Vector(((-dim_a + dim_b) / 2, (dim_a / 3 - dim_b) * sqrt3 / 2, 0))
+		
 
 def calculateLength(origin, destination):
 	length = [None] * 6
@@ -98,3 +104,8 @@ def calculateLength(origin, destination):
 		length[i] = Vector.sub(destination.jackVectorTransformed[i],origin.jackOrigin[i])
 		lengthValue[i] = (math.sqrt(length[i].x * length[i].x + length[i].y * length[i].y + length[i].z * length[i].z))
 	return lengthValue
+	
+	
+def printValues(source):
+	for i in source:
+		print(f'{i:4.2f}')

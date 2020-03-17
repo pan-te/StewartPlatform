@@ -5,12 +5,11 @@
 
 import mathematics as mt
 
-platformBase = mt.Base(16, 2)
-platformMoving = mt.Platform(14, 2 , 0)
+platformBase = mt.Base(2000, 100)
+platformMoving = mt.Platform(1600, 100, 100)
 
-destPlane = mt.Plane((0.0, 0.0, -16.0), (0, 0, 0))
+destPlane = mt.Plane((0.0, 0.0, -1000), (0, 0, 0))
 platformMoving.transform(destPlane)
 lengths = mt.calculateLength(platformBase, platformMoving)
 
-for i in range(6):
-	print(lengths[i])
+mt.printValues(lengths)
