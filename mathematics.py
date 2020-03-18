@@ -105,7 +105,7 @@ def calculateLength(origin, destination):
 	return lengthValue
 	
 def inverseTransform(origin, destination, lengthValue):
-	maxXYZ = max(lengthValue)
+	maxXYZ = math.trunc(max(lengthValue))
 #first iteration:	
 	firstRange = maxXYZ // 4
 	radious = math.pi/2
