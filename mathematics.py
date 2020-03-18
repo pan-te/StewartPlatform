@@ -104,11 +104,12 @@ def calculateLength(origin, destination):
 		lengthValue[i] = (math.sqrt(length[i].x ** 2 + length[i].y ** 2 + length[i].z ** 2))
 	return lengthValue
 	
-def reverseTransform(origin, destination, maxLength, lengthValue):
-	maxXYZ = maxLength
-	firstRange = maxLength // 5
+def inverseTransform(origin, destination, lengthValue):
+	maxXYZ = max(lengthValue)
+#first iteration:	
+	firstRange = maxXYZ // 4
 	radious = math.pi/2
-	radiousFirstRange = radious / 5
+	radiousFirstRange = radious / 16
 	minError = 99999
 	for i in range(0, maxXYZ, firstRange):
 		for j in range(0, maxXYZ, firstRange):
@@ -130,8 +131,9 @@ def reverseTransform(origin, destination, maxLength, lengthValue):
 							n += radiousFirstRange
 						m += radiousFirstRange
 					l += radiousFirstRange
-	secondRange = maxLength // 25
-	radiousSecondRange = radious / 25
+#second iteration:	
+	secondRange = maxXYZ // 8
+	radiousSecondRange = radious / 32
 	minError = 99999
 	minL = bestValues[1][0] - radiousFirstRange
 	minM = bestValues[1][1] - radiousFirstRange
@@ -159,6 +161,37 @@ def reverseTransform(origin, destination, maxLength, lengthValue):
 							n += radiousSecondRange
 						m += radiousSecondRange
 					l += radiousSecondRange
+#third iteration (kill me pls):					
+	thirdRange = maxXYZ // 32
+	radiousThirdRange = radious / 64
+	minError = 99999
+	minL = bestValues[1][0] - radiousSecondRange
+	minM = bestValues[1][1] - radiousSecondRange
+	minN = bestValues[1][2] - radiousSecondRange
+	maxL = bestValues[1][0] + radiousSecondRange
+	maxM = bestValues[1][1] + radiousSecondRange
+	maxN = bestValues[1][2] + radiousSecondRange
+	for i in range(bestValues[0][0] - secondRange, bestValues[0][0] + secondRange, thirdRange):
+		for j in range(bestValues[0][1] - secondRange, bestValues[0][1] + secondRange, thirdRange):
+			for k in range(bestValues[0][2] - secondRange, bestValues[0][2] + secondRange, thirdRange):
+				l = minL
+				while l < maxL:
+					m = minM
+					while m < maxM:
+						n = minN
+						while n < maxN:
+							tempError = 0
+							destination.transform(Plane((i,j,k),(l,m,n)))
+							calculatedValue = calculateLength(origin, destination)
+							for z in range(6):
+								tempError += (calculatedValue[z] - lengthValue[z]) ** 2
+							if tempError < minError:
+								minError = tempError
+								bestValues = [[i,j,k],[l,m,n]]
+							n += radiousThirdRange
+						m += radiousThirdRange
+					l += radiousThirdRange
+	
 	return Plane(bestValues[0], bestValues[1])
 	
 def printValues(source):
