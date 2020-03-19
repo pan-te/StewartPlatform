@@ -4,7 +4,7 @@ Zestaw narzędzi do transformacji platformy Stewarta
 
 Wymagania:
 
-Python (zalecana wersja >3.8), PyGObject i PyCairo (w przyszłości)
+PyPy
 
 (c) by Daniel Sadlik
 

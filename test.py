@@ -6,7 +6,7 @@ platformBase = mt.Base(2000, 100)
 platformMoving = mt.Platform(1600, 100, 100)
 
 givenLengths = (1300, 1300, 1300, 1300, 1300, 1300)
-print(f'Calculate plane for given lengths: {givenLengths}')
+print('Calculate plane for given lengths: {}'.format(givenLengths))
 result = mt.inverseTransform(platformBase, platformMoving, givenLengths)
 
 print('Result is:')
@@ -17,7 +17,7 @@ print('Checking if calculation is correct...')
 platformMoving.transform(result)
 lengths = mt.calculateLength(platformBase, platformMoving)
 
-print(f'Result is: {lengths}')
+print('Result is: {}'.format(lengths))
 print()
 
 print('Now try reversed:')
@@ -31,8 +31,7 @@ platformMoving.transform(destPlane)
 
 lengths = mt.calculateLength(platformBase, platformMoving)
 
-print(f'Lengths are: {lengths}')
+print('Lengths are: {}'.format(lengths))
 print('Inverse transform:')
 inversedPlane2 = mt.inverseTransform(platformBase, platformMoving, lengths)
 inversedPlane2.printAll()
-
