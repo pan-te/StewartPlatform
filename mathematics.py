@@ -104,83 +104,64 @@ def calculateLength(origin, destination):
 		lengthValue[i] = (math.sqrt(length[i].x ** 2 + length[i].y ** 2 + length[i].z ** 2))
 	return lengthValue
 	
-def inverseTransform(origin, destination, lengthValue):
-	maxXYZ = max(lengthValue)
-#first iteration:	
-	firstRange = maxXYZ / 16
+def inverseTransform(origin, destination, lengthValue, accuracy, iterations):
+	halfXYZ = max(lengthValue) / 2
+	bestValues = [[halfXYZ, halfXYZ, -halfXYZ], [0, 0, 0]]
+#	accuracy = 8
+	positionRange = [None] * 2
+	angleRange = [None] * 2
+	positionRange[0] = halfXYZ
+	positionRange[1] = halfXYZ / accuracy
 	angle = 0.5236 #pi/6
-	angleFirstRange = angle / 8
-	minError = 1000000
-	i = 0
-	while i < maxXYZ:
-		j = 0
-		while j < maxXYZ:
-			k = -maxXYZ
-			while k < 0:
-				l = -angle
-				while l < angle:
-					m = -angle
-					while m < angle:
-						n = -angle
-						while n < angle:
-							tempError = 0
-							destination.transform(Plane((i,j,k),(l,m,n)))
-							calculatedValue = calculateLength(origin, destination)
-							for z in (0, 1, 2, 3, 4, 5):
-								tempError += (calculatedValue[z] - lengthValue[z]) ** 2
-							if tempError < minError:
-								minError = tempError
-								bestValues = [[i,j,k],[l,m,n]]
-							n += angleFirstRange
-						m += angleFirstRange
-					l += angleFirstRange
-				k += firstRange
-			j += firstRange
-		i += firstRange
-	print('First iteration done.')
-#second iteration:	
-	secondRange = firstRange / 8
-	angleSecondRange = angleFirstRange / 8
-	minError = 99999
-	minI = bestValues[0][0] - firstRange
-	minJ = bestValues[0][1] - firstRange
-	minK = bestValues[0][2] - firstRange
-	minL = bestValues[1][0] - angleFirstRange
-	minM = bestValues[1][1] - angleFirstRange
-	minN = bestValues[1][2] - angleFirstRange
-	maxI = bestValues[0][0] + firstRange
-	maxJ = bestValues[0][1] + firstRange
-	maxK = bestValues[0][2] + firstRange
-	maxL = bestValues[1][0] + angleFirstRange
-	maxM = bestValues[1][1] + angleFirstRange
-	maxN = bestValues[1][2] + angleFirstRange
-	i = minI
-	while i < maxI:
-		j = minJ
-		while j < maxJ:
-			k = minK
-			while k < maxK:
-				l = minL
-				while l < maxL:
-					m = minM
-					while m < maxM:
-						n = minN
-						while n < maxN:
-							tempError = 0
-							destination.transform(Plane((i,j,k),(l,m,n)))
-							calculatedValue = calculateLength(origin, destination)
-							for z in range(6):
-								tempError += (calculatedValue[z] - lengthValue[z]) ** 2
-							if tempError < minError:
-								minError = tempError
-								bestValues = [[i,j,k],[l,m,n]]
-							n += angleSecondRange
-						m += angleSecondRange
-					l += angleSecondRange
-				k += secondRange
-			j += secondRange
-		i += secondRange
-
+	angleRange[0] = angle
+	angleRange[1] = angle / accuracy
+	for iter in range(iterations):		
+		minError = 1000000
+		minI = bestValues[0][0] - positionRange[0]
+		minJ = bestValues[0][1] - positionRange[0]
+		minK = bestValues[0][2] - positionRange[0]
+		minL = bestValues[1][0] - angleRange[0]
+		minM = bestValues[1][1] - angleRange[0]
+		minN = bestValues[1][2] - angleRange[0]
+		maxI = bestValues[0][0] + positionRange[0]
+		maxJ = bestValues[0][1] + positionRange[0]
+		maxK = bestValues[0][2] + positionRange[0]
+		maxL = bestValues[1][0] + angleRange[0]
+		maxM = bestValues[1][1] + angleRange[0]
+		maxN = bestValues[1][2] + angleRange[0]
+		i = minI
+		while i < maxI:
+			j = minJ
+			while j < maxJ:
+				k = minK
+				while k < maxK:
+					l = minL
+					while l < maxL:
+						m = minM
+						while m < maxM:
+							n = minN
+							while n < maxN:
+								tempError = 0
+								destination.transform(Plane((i,j,k),(l,m,n)))
+								calculatedValue = calculateLength(origin, destination)
+								for z in range(6):
+									tempError += (calculatedValue[z] - lengthValue[z]) ** 2
+								if tempError < minError:
+									minError = tempError
+									bestValues = [[i,j,k],[l,m,n]]
+									bestCalcValue = calculatedValue
+								n += angleRange[1]
+							m += angleRange[1]
+						l += angleRange[1]
+					k += positionRange[1]
+				j += positionRange[1]
+			i += positionRange[1]
+		print('Iteration no. {} done.'.format(iter))
+		positionRange[0] = positionRange[1]
+		positionRange[1] /= accuracy / 2
+		angleRange[0] = angleRange[1]
+		angleRange[1] /= accuracy / 2
+	print('Accurate motors combination is: {}\nTotal error: {}'.format(bestCalcValue, minError))
 	return Plane(bestValues[0], bestValues[1])
 	
 def printValues(source):
