@@ -1,6 +1,6 @@
 #!/usr/bin/pypy
 
-import mathematics as mt
+import stewart as mt
 import time
 
 platformBase = mt.Base(2000, 100)
@@ -11,7 +11,7 @@ print('Calculate plane for given lengths: {}'.format(givenLengths))
 
 timeStart = time.time()
 
-result = mt.inverseTransform(platformBase, platformMoving, givenLengths, 8, 4)
+result = mt.inverseTransform(platformBase, platformMoving, givenLengths, 8, 8)
 
 timeStop = time.time() - timeStart
 
@@ -39,5 +39,5 @@ platformMoving.transform(destPlane)
 lengths = mt.calculateLength(platformBase, platformMoving)
 
 print('Inverse transform:')
-inversedPlane2 = mt.inverseTransform(platformBase, platformMoving, lengths, 8, 4)
+inversedPlane2 = mt.inverseTransform(platformBase, platformMoving, lengths, 8, 8)
 inversedPlane2.printAll()
